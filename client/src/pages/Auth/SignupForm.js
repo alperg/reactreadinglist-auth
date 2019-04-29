@@ -35,9 +35,8 @@ class SignupForm extends Component {
       username: this.state.username,
       password: this.state.password
     }).then(response => {
-      console.log(response);
+      // console.log(response);
       if (!response.data.errmsg) {
-        console.log('youre good');
         this.setState({
           redirectTo: '/'
         });
