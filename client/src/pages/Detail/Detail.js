@@ -12,7 +12,7 @@ class Detail extends Component {
   // e.g. localhost:3000/books/599dcb67f0f16317844583fc
   componentDidMount() {
     API.getBook(this.props.match.params.id)
-      .then(res => this.setState({ book: res.data }))
+      .then(res => this.setState({ book: res.data.book }))
       .catch(err => console.log(err));
   }
 
