@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import LoginForm from './pages/Auth/LoginForm';
 import SignupForm from './pages/Auth/SignupForm';
@@ -8,87 +8,75 @@ import Detail from "./pages/Detail";
 import NoMatch from "./pages/NoMatch";
 import AUTH from './utils/AUTH';
 
-class App extends Component {
+function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
   
-  constructor() {
-    super();
-    
-		this.state = {
-			loggedIn: false,
-			user: null
-    };
-  }
-  
-	componentDidMount() {
-		AUTH.getUser().then(response => {
-			// console.log(response.data);
-			if (!!response.data.user) {
-				this.setState({
-					loggedIn: true,
-					user: response.data.user
-				});
-			} else {
-				this.setState({
-					loggedIn: false,
-					user: null
-				});
-			}
-		});
-	}
+  useEffect(() => {
+    AUTH.getUser().then(response => {
+        // console.log(response.data);
+        if (!!response.data.user) {
+          setLoggedIn(true);
+          setUser(response.data.user);
+        } else {
+          setLoggedIn(false);
+          setUser(null);
+        }
+      });
 
-	logout = (event) => {
+      return () => {
+        setLoggedIn(false);
+        setUser(null);
+      };
+  }, []);
+
+	const logout = (event) => {
     event.preventDefault();
     
 		AUTH.logout().then(response => {
 			// console.log(response.data);
 			if (response.status === 200) {
-				this.setState({
-					loggedIn: false,
-					user: null
-				});
+				setLoggedIn(false);
+        setUser(null);
 			}
 		});
-	}
+	};
 
-	login = (username, password) => {
+	const login = (username, password) => {
 		AUTH.login(username, password).then(response => {
-      // console.log(response);
+      console.log(response.data);
       if (response.status === 200) {
         // update the state
-        this.setState({
-          loggedIn: true,
-          user: response.data.user
-        });
+        setLoggedIn(true);
+        setUser(response.data.user);
       }
     });
-	}
+	};
 
-	render() {
-		return (
-			<div className="App">
-        { this.state.loggedIn && (
-          <div>
-            <Nav user={this.state.user} logout={this.logout}/>
-            <div className="main-view">
-              <Switch>
-                <Route exact path="/" component={() => <Books user={this.state.user}/>} />
-                <Route exact path="/books" component={() => <Books user={this.state.user}/>} />
-                <Route exact path="/books/:id" component={Detail} />
-                <Route component={NoMatch} />
-              </Switch>
-            </div>
+  return (
+    <div className="App">
+      { loggedIn && (
+        <div>
+          <Nav user={user} logout={logout}/>
+          <div className="main-view">
+            <Switch>
+              <Route exact path="/" component={Books} />
+              <Route exact path="/books" component={Books} />
+              <Route exact path="/books/:id" component={Detail} />
+              <Route component={NoMatch} />
+            </Switch>
           </div>
-        )}
-        { !this.state.loggedIn && (
-          <div className="auth-wrapper" style={{paddingTop:40}}>
-            <Route exact path="/" component={() => <LoginForm login={this.login}/>} />
-            <Route exact path="/books" component={() => <LoginForm user={this.login}/>} />
-            <Route exact path="/signup" component={SignupForm} />
-          </div>
-        )}
-			</div>
-		)
-	}
+        </div>
+      )}
+      { !loggedIn && (
+        <div className="auth-wrapper" style={{paddingTop:40}}>
+          <Route exact path="/" component={() => <LoginForm login={login}/>} />
+          <Route exact path="/books" component={() => <LoginForm user={login} />} />
+          <Route exact path="/signup" component={SignupForm} />
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default App;

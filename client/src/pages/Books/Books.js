@@ -1,118 +1,115 @@
-import React, { Component } from "react";
-import DeleteBtn from "../../components/DeleteBtn";
-import Jumbotron from "../../components/Jumbotron";
-import API from "../../utils/API";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
 import { Col, Row, Container } from "../../components/Grid";
 import { List, ListItem } from "../../components/List";
+import { Card } from "../../components/Card";
 import { Input, TextArea, FormBtn } from "../../components/Form";
+import DeleteBtn from "../../components/DeleteBtn";
+import API from "../../utils/API";
 
-class Books extends Component {
-  state = {
-    books: [],
-    title: "",
-    author: "",
-    synopsis: ""
+function Books() {
+  // Setting our component's initial state
+  const [books, setBooks] = useState([])
+  const [formObject, setFormObject] = useState({})
+
+  // Load all books and store them with setBooks
+  useEffect(() => {
+    loadBooks();
+  }, []);
+
+  // Loads all books and sets them to books
+  function loadBooks() {
+    API.getBooks()
+      .then(res => {
+        // console.log(res.data.books);
+        setBooks(res.data.books);
+      })
+      .catch(err => console.log(err));
   };
 
-  componentDidMount() {
-    this.loadBooks();
+  // Deletes a book from the database with a given id, then reloads books from the db
+  function deleteBook(id) {
+    API.deleteBook(id)
+      .then(res => loadBooks())
+      .catch(err => console.log(err));
   }
 
-  loadBooks = () => {
-    API.getBooks()
-      .then(res =>
-        this.setState({ books: res.data.books, title: "", author: "", synopsis: "" })
-      )
-      .catch(err => console.log(err));
-  };
-
-  deleteBook = id => {
-    API.deleteBook(id)
-      .then(res => this.loadBooks())
-      .catch(err => console.log(err));
-  };
-
-  handleInputChange = event => {
+  // Handles updating component state when the user types into the input field
+  function handleInputChange(event) {
     const { name, value } = event.target;
-    this.setState({
-      [name]: value
-    });
+    setFormObject({...formObject, [name]: value})
   };
 
-  handleFormSubmit = event => {
+  // When the form is submitted, use the API.saveBook method to save the book data
+  // Then reload books from the database
+  function handleFormSubmit(event) {
     event.preventDefault();
-    if (this.state.title && this.state.author) {
+    if (formObject.title && formObject.author) {
       API.saveBook({
-        title: this.state.title,
-        author: this.state.author,
-        synopsis: this.state.synopsis
+        title: formObject.title,
+        author: formObject.author,
+        synopsis: formObject.synopsis
       })
-        .then(res => this.loadBooks())
+        .then(res => loadBooks())
         .catch(err => console.log(err));
     }
   };
 
-  render() {
     return (
       <Container fluid>
         <Row>
           <Col size="md-6">
-            <Jumbotron>
-              <h1>What Books Should I Read?</h1>
-            </Jumbotron>
-            <form>
-              <Input
-                value={this.state.title}
-                onChange={this.handleInputChange}
-                name="title"
-                placeholder="Title (required)"
-              />
-              <Input
-                value={this.state.author}
-                onChange={this.handleInputChange}
-                name="author"
-                placeholder="Author (required)"
-              />
-              <TextArea
-                value={this.state.synopsis}
-                onChange={this.handleInputChange}
-                name="synopsis"
-                placeholder="Synopsis (Optional)"
-              />
-              <FormBtn
-                disabled={!(this.state.author && this.state.title)}
-                onClick={this.handleFormSubmit}
-              >
-                Submit Book
-              </FormBtn>
-            </form>
+            <Card title="What Books Should I Read?">
+              <form>
+                <Input
+                  onChange={handleInputChange}
+                  name="title"
+                  placeholder="Title (required)"
+                />
+                <Input
+                  onChange={handleInputChange}
+                  name="author"
+                  placeholder="Author (required)"
+                />
+                <TextArea
+                  onChange={handleInputChange}
+                  name="synopsis"
+                  placeholder="Synopsis (Optional)"
+                />
+                <FormBtn
+                  disabled={!(formObject.author && formObject.title)}
+                  onClick={handleFormSubmit}
+                >
+                  Submit Book
+                </FormBtn>
+              </form>
+            </Card>
           </Col>
           <Col size="md-6 sm-12">
-            <Jumbotron>
-              <h1>Books On My List</h1>
-            </Jumbotron>
-            {this.state.books.length ? (
-              <List>
-                {this.state.books.map(book => (
-                  <ListItem key={book._id}>
-                    <Link to={"/books/" + book._id}>
-                      <strong>
-                        {book.title} by {book.author}
-                      </strong>
-                    </Link>
-                    <DeleteBtn onClick={() => this.deleteBook(book._id)} />
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <h3>No Results to Display</h3>
-            )}
+            <Card title="Books On My List">
+              {books.length ? (
+                <List>
+                  {books.map(book => (
+                    <ListItem key={book._id}>
+                      <Link to={"/books/" + book._id}>
+                        <strong>
+                          {book.title} by {book.author}
+                        </strong>
+                      </Link>
+                      <DeleteBtn onClick={() => deleteBook(book._id)} />
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <h3>No Results to Display</h3>
+              )}
+            </Card>
           </Col>
         </Row>
       </Container>
     );
   }
-}
+
 
 export default Books;

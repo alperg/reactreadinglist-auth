@@ -13,28 +13,28 @@
     "heroku-postbuild": "npm run build"
   },
   "engines": {
-    "node": "8.9.4",
-    "npm": "5.6.x",
-    "yarn": "1.4.0"
+    "node": "12.10.0",
+    "npm": "6.11.3",
+    "yarn": "1.19.1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^3.5.0",
-    "nodemon": "^1.11.0"
+    "concurrently": "^5.2.0",
+    "if-env": "^1.0.4",
+    "nodemon": "^2.0.4"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.19.2",
     "bcrypt": "^3.0.2",
     "bcryptjs": "^2.4.3",
     "connect-mongo": "^2.0.1",
-    "dotenv": "^6.1.0",
-    "express": "^4.16.4",
-    "express-session": "^1.15.6",
-    "if-env": "^1.0.4",
-    "mongoose": "^5.3.4",
-    "morgan": "^1.9.1",
-    "passport": "^0.4.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "mongoose": "^5.9.14",
+    "morgan": "^1.10.0",
+    "passport": "^0.4.1",
     "passport-local": "^1.0.0"
   }
 }
