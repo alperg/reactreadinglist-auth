@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 import { Col, Row, Container } from "../../components/Grid";
@@ -10,8 +10,9 @@ import API from "../../utils/API";
 
 function Books() {
   // Setting our component's initial state
-  const [books, setBooks] = useState([])
-  const [formObject, setFormObject] = useState({})
+  const [books, setBooks] = useState([]);
+  const [formObject, setFormObject] = useState({});
+  const formEl = useRef(null);
 
   // Load all books and store them with setBooks
   useEffect(() => {
@@ -51,7 +52,10 @@ function Books() {
         author: formObject.author,
         synopsis: formObject.synopsis
       })
-        .then(res => loadBooks())
+        .then(res => {
+          formEl.current.reset();
+          loadBooks();
+        })
         .catch(err => console.log(err));
     }
   };
@@ -61,7 +65,7 @@ function Books() {
         <Row>
           <Col size="md-6">
             <Card title="What Books Should I Read?">
-              <form>
+              <form ref={formEl}>
                 <Input
                   onChange={handleInputChange}
                   name="title"
