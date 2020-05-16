@@ -1,6 +1,6 @@
 {
   "name": "reactreadinglist-auth-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Full Stack React App with Authentication",
   "main": "server/server.js",
   "scripts": {
@@ -20,18 +20,18 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^5.2.0",
-    "if-env": "^1.0.4",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
     "axios": "^0.19.2",
     "bcrypt": "^3.0.2",
     "bcryptjs": "^2.4.3",
+    "concurrently": "^5.2.0",
     "connect-mongo": "^2.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
+    "if-env": "^1.0.4",
     "mongoose": "^5.9.14",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
